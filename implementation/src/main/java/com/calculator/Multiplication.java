@@ -2,14 +2,17 @@ package com.calculator;
 
 public class Multiplication implements IPlugins {
 
+    private String operator = "*";
+    private int weightOfOperator = 2;
+
     @Override
     public String getOperator() {
-        return null;
+        return operator;
     }
 
     @Override
     public int getWeightOfOperator() {
-        return 0;
+        return weightOfOperator;
     }
 
     @Override

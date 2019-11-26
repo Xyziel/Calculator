@@ -3,6 +3,9 @@ package com.calculator;
 public class Subtraction implements IPlugins {
 
 
+    private String operator = "/";
+    private int weightOfOperator = 1;
+
     @Override
     public double compute(double a, double b) {
         return a - b;
@@ -10,11 +13,11 @@ public class Subtraction implements IPlugins {
 
     @Override
     public String getOperator() {
-        return null;
+        return operator;
     }
 
     @Override
     public int getWeightOfOperator() {
-        return 0;
+        return weightOfOperator;
     }
 }
