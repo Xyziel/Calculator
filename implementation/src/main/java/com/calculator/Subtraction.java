@@ -1,23 +1,45 @@
 package com.calculator;
 
-public class Subtraction implements IPlugins {
+import com.calculator.classData.OperationData;
 
+import java.util.List;
 
-    private String operator = "/";
-    private int weightOfOperator = 1;
+public class Subtraction implements IOperation {
+
+    private OperationData data;
+
+    public Subtraction() {
+        data = new OperationData("-", 1, 2);
+    }
 
     @Override
-    public double compute(double a, double b) {
-        return a - b;
+    public double compute(List<Double> listOfNumbers) {
+        if(listOfNumbers.size() == 1) {
+            return -listOfNumbers.get(0);
+        }
+        else {
+            return listOfNumbers.get(1) - listOfNumbers.get(0);
+        }
     }
 
     @Override
     public String getOperator() {
-        return operator;
+        return null;
     }
 
     @Override
     public int getWeightOfOperator() {
-        return weightOfOperator;
+        return 0;
+    }
+
+    @Override
+    public int getNumberOfOperands() {
+        return data.getNumberOfOperands();
+    }
+
+    @Override
+    public void displayInfo() {
+        System.out.print(data.getOperator() + " - " + getClass().getName() + " allows for calculate the subtraction of 2 numbers and the negation of a number. Example: 4-1=3, -(-2)=2");
     }
 }
+
