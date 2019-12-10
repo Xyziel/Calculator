@@ -45,7 +45,7 @@ public class Calc implements ICal{
     @Override
     public double calculate(String input) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Stack<String> operator = new Stack<>();
-        List<String> number = new ArrayList<>();
+        List<String> numbersInRPN = new ArrayList<>();
         List<Integer> flagsOfNegation = new ArrayList<>();
 
         String exp = input;
@@ -59,12 +59,15 @@ public class Calc implements ICal{
 
         exp = exp.replace("  ", " ");
         String[] elements = exp.split(" ");
-        List<String> elementsList = Arrays.asList(elements);
+        List<String> elementsList = new ArrayList<>(Arrays.asList(elements));
         int counter = 0;
+
+        elementsList.remove("");
+
         for(String elem: elementsList) {
             if (!elem.equals("")) {
                 if (!isOperator(elem)) {
-                    number.add(elem);
+                    numbersInRPN.add(elem);
                 }
 
                 else if (elem.contains("(")) {
@@ -73,7 +76,7 @@ public class Calc implements ICal{
 
                 else if (elem.contains(")")) {
                     while (!operator.isEmpty() && !operator.peek().contains("(")) {
-                        number.add(operator.pop());
+                        numbersInRPN.add(operator.pop());
                     }
                     if (!operator.isEmpty() && !operator.peek().contains("(")) {
                         throw new NumberFormatException("Invalid expression");
@@ -92,7 +95,7 @@ public class Calc implements ICal{
                         if (operator.peek().contains("(")) {
                             throw new NumberFormatException("Invalid expression");
                         }
-                        number.add(operator.pop());
+                        numbersInRPN.add(operator.pop());
                     }
                     operator.push(elem);
                 }
@@ -104,36 +107,38 @@ public class Calc implements ICal{
             if (operator.peek().contains("(")) {
                 throw new NumberFormatException("Invalid expression");
             }
-            number.add(operator.pop());
+            numbersInRPN.add(operator.pop());
         }
 
-        for (int i = 0; i < number.size(); i++) {
-            if (isOperator(number.get(i))) {
+        System.out.println(numbersInRPN);
+        System.out.println(flagsOfNegation.size());
+        for (int i = 0; i < numbersInRPN.size(); i++) {
+            if (isOperator(numbersInRPN.get(i))) {
 
-                int numberOfOperands = data.getNumberOfOperandsMap().get(number.get(i));
+                int numberOfOperands = data.getNumberOfOperandsMap().get(numbersInRPN.get(i));
                 List<Double> numbersToOperate = new ArrayList<>();
 
-                if(number.get(i).equals("-") && flagsOfNegation.size() != 0 && i != flagsOfNegation.get(0)) {
+                if(numbersInRPN.get(i).equals("-") && (flagsOfNegation.size() != 0)) {
                     numberOfOperands = 1;
                     flagsOfNegation = flagsOfNegation.subList(1, flagsOfNegation.size());
                 }
 
                 for(int l = 0; l < numberOfOperands; l++) {
-                    numbersToOperate.add(Double.parseDouble(number.get(i - 1 - l)));
+                    numbersToOperate.add(Double.parseDouble(numbersInRPN.get(i - 1 - l)));
                 }
 
-                number.add(i + 1, data.getFunctionMap().get(number.get(i)).getClass().getMethod("compute", List.class).invoke(data.getFunctionMap().get(number.get(i)), numbersToOperate).toString());
+                numbersInRPN.add(i + 1, data.getFunctionMap().get(numbersInRPN.get(i)).getClass().getMethod("compute", List.class).invoke(data.getFunctionMap().get(numbersInRPN.get(i)), numbersToOperate).toString());
 
                 for (int j = 0; j < numberOfOperands + 1; j++) {
-                    number.remove(i - numberOfOperands);
+                    numbersInRPN.remove(i - numberOfOperands);
                 }
                 i = 0;
             }
         }
-        if (number.size() > 1) {
+        if (numbersInRPN.size() > 1) {
             throw new NumberFormatException("Invalid expression");
         }
-        return Double.parseDouble(number.get(0));
+        return Double.parseDouble(numbersInRPN.get(0));
     }
 
     public void setFunctionMap(String sign , Object operation) {
